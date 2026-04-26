@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LyovT Coins Pro</title>
+    <title>LyovT Coins Pro v7</title>
     <style>
         :root {
             --primary-bg: #1a4269;
@@ -71,7 +71,6 @@
             height: 45px;
             border-radius: 50%;
             object-fit: cover;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
 
         .currency-label {
@@ -109,15 +108,20 @@
             margin-left: 10px;
         }
 
-        /* LyovT Coins Label Style */
-        .brand-label {
-            text-align: right;
+        .brand-block {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
             padding: 10px 5px;
+        }
+
+        .brand-label {
             font-size: 1.2rem;
             font-weight: bold;
             color: #89b3d9;
             font-style: italic;
             letter-spacing: 1px;
+            margin: 0;
         }
 
         .kopek-result-block {
@@ -126,22 +130,26 @@
             padding: 25px 20px;
             border-top: 5px solid #fff;
             margin-top: 10px;
+            text-align: center;
         }
 
         .kopek-title {
-            text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        #kopek-total {
-            text-align: center;
+        #kopek-input {
+            background: transparent;
+            border: none;
+            color: #fff;
             font-size: 3.5rem;
             font-weight: bold;
-            margin: 0;
+            width: 100%;
+            text-align: center;
+            outline: none;
         }
 
         #settings-panel {
@@ -154,6 +162,13 @@
         }
         .setting-input { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .save-btn { width: 100%; padding: 8px; background: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--primary-bg); }
+        
+        /* Հեռացնում ենք սլաքները number input-ից */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -168,7 +183,7 @@
             <img src="https://flagpedia.net/data/flags/w580/am.png" class="flag">
             <span class="currency-label">AMD</span>
             <div class="input-wrapper">
-                <input type="number" id="amd" class="currency-input" placeholder="0" oninput="calculate('amd')">
+                <input type="number" id="amd" class="currency-input" placeholder="0" oninput="calculateFromMoney('amd')">
                 <button class="clear-btn" onclick="clearField('amd')">✕</button>
             </div>
         </div>
@@ -176,7 +191,7 @@
             <img src="https://flagpedia.net/data/flags/w580/us.png" class="flag">
             <span class="currency-label">USD</span>
             <div class="input-wrapper">
-                <input type="number" id="usd" class="currency-input" placeholder="0" oninput="calculate('usd')">
+                <input type="number" id="usd" class="currency-input" placeholder="0" oninput="calculateFromMoney('usd')">
                 <button class="clear-btn" onclick="clearField('usd')">✕</button>
             </div>
         </div>
@@ -184,13 +199,15 @@
             <img src="https://flagpedia.net/data/flags/w580/ru.png" class="flag">
             <span class="currency-label">RUB</span>
             <div class="input-wrapper">
-                <input type="number" id="rub" class="currency-input" placeholder="0" oninput="calculate('rub')">
+                <input type="number" id="rub" class="currency-input" placeholder="0" oninput="calculateFromMoney('rub')">
                 <button class="clear-btn" onclick="clearField('rub')">✕</button>
             </div>
         </div>
     </div>
 
-    <div class="brand-label">LyovT coins</div>
+    <div class="brand-block">
+        <p class="brand-label">LyovT coins</p>
+    </div>
 
     <div id="settings-panel">
         <h3>1000 Կոպեկի Արժեքը</h3>
@@ -204,7 +221,7 @@
     
     <div class="kopek-result-block">
         <div class="kopek-title">ընդհանուր կոպեկ</div>
-        <p id="kopek-total">0</p>
+        <input type="number" id="kopek-input" value="0" oninput="calculateFromKopek()">
     </div>
 </div>
 
@@ -212,7 +229,7 @@
     let config = { amd: 4900, rub: 1000, usd: 13.5 };
 
     window.onload = function() {
-        const saved = localStorage.getItem('kopec_config_v4');
+        const saved = localStorage.getItem('kopec_config_v7');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('set-amd').value = config.amd;
@@ -230,21 +247,21 @@
         config.amd = parseFloat(document.getElementById('set-amd').value);
         config.rub = parseFloat(document.getElementById('set-rub').value);
         config.usd = parseFloat(document.getElementById('set-usd').value);
-        localStorage.setItem('kopec_config_v4', JSON.stringify(config));
+        localStorage.setItem('kopec_config_v7', JSON.stringify(config));
         toggleSettings();
         resetAll();
     }
 
-    function calculate(source) {
+    function calculateFromMoney(source) {
         const amdIn = document.getElementById('amd');
         const rubIn = document.getElementById('rub');
         const usdIn = document.getElementById('usd');
-        const kopekOut = document.getElementById('kopek-total');
+        const kopekIn = document.getElementById('kopek-input');
 
         let val = parseFloat(document.getElementById(source).value);
         
         if (isNaN(val) || val === 0) {
-            kopekOut.innerText = "0";
+            kopekIn.value = 0;
             return;
         }
 
@@ -264,8 +281,27 @@
             rubIn.value = (totalKopeks * (config.rub / 1000)).toFixed(2);
         }
 
-        // Օգտագործում ենք Math.round ճշգրտության համար
-        kopekOut.innerText = Math.round(totalKopeks).toLocaleString();
+        kopekIn.value = Math.round(totalKopeks);
+    }
+
+    function calculateFromKopek() {
+        const amdIn = document.getElementById('amd');
+        const rubIn = document.getElementById('rub');
+        const usdIn = document.getElementById('usd');
+        const kopekIn = document.getElementById('kopek-input');
+
+        let kopeks = parseFloat(kopekIn.value);
+
+        if (isNaN(kopeks) || kopeks === 0) {
+            amdIn.value = "";
+            rubIn.value = "";
+            usdIn.value = "";
+            return;
+        }
+
+        amdIn.value = (kopeks * (config.amd / 1000)).toFixed(0);
+        rubIn.value = (kopeks * (config.rub / 1000)).toFixed(2);
+        usdIn.value = (kopeks * (config.usd / 1000)).toFixed(2);
     }
 
     function clearField(id) {
@@ -277,7 +313,7 @@
         document.getElementById('amd').value = "";
         document.getElementById('rub').value = "";
         document.getElementById('usd').value = "";
-        document.getElementById('kopek-total').innerText = "0";
+        document.getElementById('kopek-input').value = 0;
     }
 </script>
 
