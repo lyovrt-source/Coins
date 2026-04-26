@@ -3,222 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Կոպեկների Հաշվիչ Pro v2</title>
+    <title>LyovT Coins Pro</title>
     <style>
         :root {
-            --primary: #ffcc00;
-            --bg: #121212;
-            --card-bg: #1e1e1e;
-            --text: #ffffff;
-            --input-bg: #2a2a2a;
+            --primary-bg: #1a4269;
+            --input-bg: #89b3d9;
+            --text-color: #ffffff;
+            --secondary-text: #5e6b8c;
+            --divider: #3b5f8a;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: var(--bg);
-            color: var(--text);
+            background-color: var(--primary-bg);
+            color: var(--text-color);
         }
 
-        .container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 380px;
-            border: 1px solid #333;
+        .main-container {
+            width: 90%;
+            max-width: 400px;
             position: relative;
         }
 
-        /* Settings Icon */
         .settings-toggle {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: -30px;
+            right: 0px;
             cursor: pointer;
-            font-size: 24px;
-            color: var(--primary);
+            font-size: 20px;
+            color: #fff;
             transition: transform 0.3s;
         }
         .settings-toggle:hover { transform: rotate(90deg); }
 
-        h2 {
-            text-align: center;
-            margin-top: 0;
-            color: var(--primary);
-            text-transform: uppercase;
-            font-size: 1.4rem;
-        }
-
-        .input-group {
-            margin-bottom: 18px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.8rem;
-            color: #aaa;
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
             padding-left: 5px;
+            border-bottom: 2px solid var(--divider);
+            padding-bottom: 2px;
+            text-transform: lowercase;
+        }
+
+        .currency-block {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .currency-row {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--divider);
+            position: relative;
+        }
+        .currency-row:last-child { border-bottom: none; }
+
+        .flag {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+
+        .currency-label {
+            margin-left: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 40px;
         }
 
         .input-wrapper {
+            flex-grow: 1;
             display: flex;
             align-items: center;
-            position: relative;
+            justify-content: flex-end;
         }
 
-        input {
-            width: 100%;
-            padding: 14px 45px 14px 15px;
-            border: 1px solid #333;
-            border-radius: 12px;
-            background: var(--input-bg);
-            color: #fff;
-            font-size: 1.1rem;
+        input.currency-input {
+            width: 80%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--secondary-text);
+            color: var(--text-color);
+            font-size: 1.2rem;
             outline: none;
-            transition: 0.3s;
+            padding: 5px;
+            text-align: right;
         }
-
-        input:focus { border-color: var(--primary); background: #333; }
 
         .clear-btn {
-            position: absolute;
-            right: 12px;
             background: transparent;
-            color: #666;
+            color: rgba(255, 255, 255, 0.4);
             border: none;
             font-size: 18px;
             cursor: pointer;
-        }
-        .clear-btn:hover { color: var(--primary); }
-
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background: linear-gradient(145deg, #ffcc00, #ffb300);
-            border-radius: 16px;
-            text-align: center;
-            color: #000;
+            margin-left: 10px;
         }
 
-        .result-box span {
-            display: block;
-            font-size: 2.2rem;
-            font-weight: 800;
-        }
-
-        /* Settings Modal-like Panel */
-        #settings-panel {
-            display: none;
-            background: #252525;
-            padding: 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            border: 1px dashed var(--primary);
-        }
-
-        #settings-panel h3 {
-            margin: 0 0 15px 0;
-            font-size: 1rem;
-            color: var(--primary);
-        }
-
-        .rate-input {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .rate-input input {
-            width: 60%;
-            padding: 8px;
-            font-size: 0.9rem;
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary);
-            border: none;
-            border-radius: 8px;
+        /* LyovT Coins Label Style */
+        .brand-label {
+            text-align: right;
+            padding: 10px 5px;
+            font-size: 1.2rem;
             font-weight: bold;
-            cursor: pointer;
+            color: #89b3d9;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .kopek-result-block {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px 20px;
+            border-top: 5px solid #fff;
             margin-top: 10px;
         }
+
+        .kopek-title {
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+        }
+
+        #kopek-total {
+            text-align: center;
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #settings-panel {
+            display: none;
+            background: var(--input-bg);
+            color: var(--primary-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .setting-input { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .save-btn { width: 100%; padding: 8px; background: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--primary-bg); }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="main-container">
     <div class="settings-toggle" onclick="toggleSettings()">⚙️</div>
     
-    <h2>LyovT coins</h2>
+    <div class="section-title">արժույթ</div>
+
+    <div class="currency-block">
+        <div class="currency-row">
+            <img src="https://flagpedia.net/data/flags/w580/am.png" class="flag">
+            <span class="currency-label">AMD</span>
+            <div class="input-wrapper">
+                <input type="number" id="amd" class="currency-input" placeholder="0" oninput="calculate('amd')">
+                <button class="clear-btn" onclick="clearField('amd')">✕</button>
+            </div>
+        </div>
+        <div class="currency-row">
+            <img src="https://flagpedia.net/data/flags/w580/us.png" class="flag">
+            <span class="currency-label">USD</span>
+            <div class="input-wrapper">
+                <input type="number" id="usd" class="currency-input" placeholder="0" oninput="calculate('usd')">
+                <button class="clear-btn" onclick="clearField('usd')">✕</button>
+            </div>
+        </div>
+        <div class="currency-row">
+            <img src="https://flagpedia.net/data/flags/w580/ru.png" class="flag">
+            <span class="currency-label">RUB</span>
+            <div class="input-wrapper">
+                <input type="number" id="rub" class="currency-input" placeholder="0" oninput="calculate('rub')">
+                <button class="clear-btn" onclick="clearField('rub')">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="brand-label">LyovT coins</div>
 
     <div id="settings-panel">
         <h3>1000 Կոպեկի Արժեքը</h3>
-        <div class="rate-input">
-            <label>֏ AMD:</label>
-            <input type="number" id="set-amd" value="4900">
-        </div>
-        <div class="rate-input">
-            <label>₽ RUB:</label>
-            <input type="number" id="set-rub" value="1000">
-        </div>
-        <div class="rate-input">
-            <label>$ USD:</label>
-            <input type="number" id="set-usd" value="13.5">
-        </div>
-        <button class="save-btn" onclick="saveSettings()">Պահպանել Կուրսը</button>
+        <div class="setting-input"><label>AMD:</label> <input type="number" id="set-amd" value="4900"></div>
+        <div class="setting-input"><label>RUB:</label> <input type="number" id="set-rub" value="1000"></div>
+        <div class="setting-input"><label>USD:</label> <input type="number" id="set-usd" value="13.5"></div>
+        <button class="save-btn" onclick="saveSettings()">Պահպանել</button>
     </div>
 
-    <div class="input-group">
-        <label>ՀՀ ԴՐԱՄ (AMD)</label>
-        <div class="input-wrapper">
-            <input type="number" id="amd" placeholder="0" oninput="calculate('amd')">
-            <button class="clear-btn" onclick="clearField('amd')">✕</button>
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>ՌՈՒԲԼԻ (RUB)</label>
-        <div class="input-wrapper">
-            <input type="number" id="rub" placeholder="0" oninput="calculate('rub')">
-            <button class="clear-btn" onclick="clearField('rub')">✕</button>
-        </div>
-    </div>
-
-    <div class="input-group">
-        <label>ԴՈԼԱՐ (USD)</label>
-        <div class="input-wrapper">
-            <input type="number" id="usd" placeholder="0" oninput="calculate('usd')">
-            <button class="clear-btn" onclick="clearField('usd')">✕</button>
-        </div>
-    </div>
-
-    <div class="result-box">
-        <label style="color: #000; font-weight: bold;">ԸՆԴՀԱՆՈՒՐ ԿՈՊԵԿ</label>
-        <span id="kopek">0</span>
+    <div class="section-title">հաշվարկ</div>
+    
+    <div class="kopek-result-block">
+        <div class="kopek-title">ընդհանուր կոպեկ</div>
+        <p id="kopek-total">0</p>
     </div>
 </div>
 
 <script>
-    // Կուրսերի սկզբնական արժեքները
-    let config = {
-        amd: 4900,
-        rub: 1000,
-        usd: 13.5
-    };
+    let config = { amd: 4900, rub: 1000, usd: 13.5 };
 
-    // Բեռնում ենք պահպանված տվյալները եթե կան
     window.onload = function() {
-        const saved = localStorage.getItem('kopec_config');
+        const saved = localStorage.getItem('kopec_config_v4');
         if (saved) {
             config = JSON.parse(saved);
             document.getElementById('set-amd').value = config.amd;
@@ -236,10 +230,8 @@
         config.amd = parseFloat(document.getElementById('set-amd').value);
         config.rub = parseFloat(document.getElementById('set-rub').value);
         config.usd = parseFloat(document.getElementById('set-usd').value);
-        
-        localStorage.setItem('kopec_config', JSON.stringify(config));
+        localStorage.setItem('kopec_config_v4', JSON.stringify(config));
         toggleSettings();
-        alert('Կուրսը պահպանվեց։');
         resetAll();
     }
 
@@ -247,18 +239,17 @@
         const amdIn = document.getElementById('amd');
         const rubIn = document.getElementById('rub');
         const usdIn = document.getElementById('usd');
-        const kopekOut = document.getElementById('kopek');
+        const kopekOut = document.getElementById('kopek-total');
 
         let val = parseFloat(document.getElementById(source).value);
         
-        if (isNaN(val)) {
+        if (isNaN(val) || val === 0) {
             kopekOut.innerText = "0";
             return;
         }
 
         let totalKopeks = 0;
 
-        // Հաշվարկ՝ հիմնվելով նոր կուրսերի վրա (Արժեք / (Կուրս / 1000))
         if (source === 'amd') {
             totalKopeks = val / (config.amd / 1000);
             rubIn.value = (totalKopeks * (config.rub / 1000)).toFixed(2);
@@ -273,7 +264,8 @@
             rubIn.value = (totalKopeks * (config.rub / 1000)).toFixed(2);
         }
 
-        kopekOut.innerText = Math.floor(totalKopeks).toLocaleString();
+        // Օգտագործում ենք Math.round ճշգրտության համար
+        kopekOut.innerText = Math.round(totalKopeks).toLocaleString();
     }
 
     function clearField(id) {
@@ -285,7 +277,7 @@
         document.getElementById('amd').value = "";
         document.getElementById('rub').value = "";
         document.getElementById('usd').value = "";
-        document.getElementById('kopek').innerText = "0";
+        document.getElementById('kopek-total').innerText = "0";
     }
 </script>
 
